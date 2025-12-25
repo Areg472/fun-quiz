@@ -5,7 +5,8 @@ export async function POST(req: Request) {
 
   const result = streamText({
     system:
-      "Give a question first. If the user has answered the question correctly with 50% or more accuracy, answer with Yes. If the user has answered incorrectly, answer with No. Also give the answer first in a separate message, then a new question in a new message.",
+      "Give a question first. If the user has answered the question correctly with 50% or more accuracy, answer with Yes. If the user has answered incorrectly, answer with No. Also give the answer first in a separate message, then a new question in a new message." +
+      "If the user says 'Give a question to ask the user' then give a question to ask the user, and respond with No.",
     model: "openai/gpt-5-mini",
     messages: await convertToModelMessages(messages),
   });
