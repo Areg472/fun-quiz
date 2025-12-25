@@ -1,7 +1,7 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function AIStuff() {
   const [input, setInput] = useState("");
@@ -9,7 +9,7 @@ export default function AIStuff() {
   const [isWaiting, setIsWaiting] = useState(false);
   const [approvedCount, setApprovedCount] = useState(0);
   const [notApprovedCount, setNotApprovedCount] = useState(0);
-  const [isFirstResponse, setIsFirstResponse] = useState(true);
+  const isFirstResponse = useRef(true);
   const { messages, sendMessage, status } = useChat({
     onFinish: ({ message }) => {
       const firstPart = message.parts.find((part) => part.type === "text");
@@ -23,17 +23,17 @@ export default function AIStuff() {
         if (first3Chars.includes("YES")) {
           console.log("Setting approved to TRUE");
           setIsApproved(true);
-          if (!isFirstResponse) {
+          if (!isFirstResponse.current) {
             setApprovedCount((prev) => prev + 1);
           }
         } else if (first3Chars.includes("NO")) {
           console.log("Setting approved to FALSE");
           setIsApproved(false);
-          if (!isFirstResponse) {
+          if (!isFirstResponse.current) {
             setNotApprovedCount((prev) => prev + 1);
           }
         }
-        setIsFirstResponse(false);
+        isFirstResponse.current = false;
       }
       setIsWaiting(false);
     },
