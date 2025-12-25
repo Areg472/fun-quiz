@@ -9,6 +9,8 @@ export default function AIStuff() {
   const [isWaiting, setIsWaiting] = useState(false);
   const [approvedCount, setApprovedCount] = useState(0);
   const [notApprovedCount, setNotApprovedCount] = useState(0);
+  const [approvedKeyword, setApprovedKeyword] = useState("YES");
+  const [notApprovedKeyword, setNotApprovedKeyword] = useState("NO");
   const isFirstResponse = useRef(true);
   const { messages, sendMessage, status } = useChat({
     onFinish: ({ message }) => {
@@ -20,13 +22,13 @@ export default function AIStuff() {
         console.log("AI Response:", text);
         console.log("First 3 chars:", first3Chars);
 
-        if (first3Chars.includes("YES")) {
+        if (first3Chars.includes(approvedKeyword)) {
           console.log("Setting approved to TRUE");
           setIsApproved(true);
           if (!isFirstResponse.current) {
             setApprovedCount((prev) => prev + 1);
           }
-        } else if (first3Chars.includes("NO")) {
+        } else if (first3Chars.includes(notApprovedKeyword)) {
           console.log("Setting approved to FALSE");
           setIsApproved(false);
           if (!isFirstResponse.current) {
@@ -64,7 +66,10 @@ export default function AIStuff() {
             const text = firstPart.text;
             const lines = text.split("\n");
             const first3Chars = lines[0].substring(0, 3).toUpperCase();
-            if (first3Chars.includes("YES") || first3Chars.includes("NO")) {
+            if (
+              first3Chars.includes(approvedKeyword) ||
+              first3Chars.includes(notApprovedKeyword)
+            ) {
               const questionText = lines.slice(1).join("\n").trim();
               if (questionText) {
                 return (
