@@ -7,6 +7,9 @@ export default function AIStuff() {
   const [input, setInput] = useState("");
   const [isApproved, setIsApproved] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
+  const [approvedCount, setApprovedCount] = useState(0);
+  const [notApprovedCount, setNotApprovedCount] = useState(0);
+  const [isFirstResponse, setIsFirstResponse] = useState(true);
   const { messages, sendMessage, status } = useChat({
     onFinish: ({ message }) => {
       const firstPart = message.parts.find((part) => part.type === "text");
@@ -20,10 +23,17 @@ export default function AIStuff() {
         if (first3Chars.includes("YES")) {
           console.log("Setting approved to TRUE");
           setIsApproved(true);
+          if (!isFirstResponse) {
+            setApprovedCount((prev) => prev + 1);
+          }
         } else if (first3Chars.includes("NO")) {
           console.log("Setting approved to FALSE");
           setIsApproved(false);
+          if (!isFirstResponse) {
+            setNotApprovedCount((prev) => prev + 1);
+          }
         }
+        setIsFirstResponse(false);
       }
       setIsWaiting(false);
     },
@@ -42,6 +52,10 @@ export default function AIStuff() {
           : isApproved
             ? "✅ Approved"
             : "❌ Not Approved"}
+      </div>
+      <div className="mb-4 p-2 bg-zinc-100 dark:bg-zinc-800 rounded">
+        <div>✅ Approved: {approvedCount}</div>
+        <div>❌ Not Approved: {notApprovedCount}</div>
       </div>
       {messages.map((message) => {
         if (message.role === "assistant") {
