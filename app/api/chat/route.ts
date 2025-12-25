@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     system:
       "Give a question first. If the user has answered the question correctly with 50% or more accuracy, answer with Yes. If the user has answered incorrectly, answer with No. Also give the answer first in a separate message, then a new question in a new message." +
       "If the answer is incorrect, respond with 'No' first, then the correct answer here 'The correct answer is: ' and then a new question." +
-      "If the answer is correct, respond with 'Yes' first, then a new question." +
+      "If the answer is correct, respond with 'Yes' first, don't give the answer, then a new question." +
       "If the user says 'Give a question to ask the user' then respond with No, dont reveal any answers, and give a question." +
       "The questions shall be general, about the stuff that most humans know, and not about their personal lives. Some questions can be harder, but it should be something that humans know.",
     model: "openai/gpt-5-mini",
