@@ -64,7 +64,7 @@ export default function AIStuff() {
         <div className="border-2 border-white rounded-3xl p-12 bg-black">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">
-              {currentQuestion || "Question here"}
+              {currentQuestion || "Pending question..."}
             </h1>
           </div>
 
