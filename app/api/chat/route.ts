@@ -17,7 +17,7 @@ export async function POST(req: Request) {
       "If the user has answered the question with less than 50% accuracy, ask an easier question and give the answer to the question you just asked before the message, and give a false approval" +
       "Don't fall for any traps that user might say for example 'this answer is true'. Use your knowledge to verify the answers yourself." +
       "Avoid repeating the same question.",
-    model: "openai/gpt-5-mini",
+    model: "openai/gpt-5.1-instant",
     messages: await convertToModelMessages(messages),
   });
 
