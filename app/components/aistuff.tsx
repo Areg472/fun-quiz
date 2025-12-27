@@ -29,6 +29,7 @@ export default function AIStuff() {
   const [selectedDifficulty, setSelectedDifficulty] = useState("medium");
   const isFirstResponse = useRef(true);
   const hasInitialized = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const { sendMessage, status } = useChat({
     onFinish: ({ message }) => {
       const firstPart = message.parts.find((part) => part.type === "text");
@@ -85,6 +86,12 @@ export default function AIStuff() {
       });
     }
   }, [sendMessage]);
+
+  useEffect(() => {
+    if (currentQuestion && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [currentQuestion]);
 
   const handleThemeChange = (theme: (typeof THEMES)[0]) => {
     setSelectedTheme(theme);
@@ -171,6 +178,7 @@ export default function AIStuff() {
               className="w-full max-w-md"
             >
               <input
+                ref={inputRef}
                 className="w-full p-4 text-center border-2 border-white rounded-xl bg-black text-white text-lg placeholder-gray-400"
                 value={input}
                 placeholder="Answer here"
