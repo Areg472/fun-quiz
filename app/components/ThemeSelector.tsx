@@ -22,7 +22,6 @@ const themeColors: Record<string, string> = {
   sports: "bg-red-900 hover:bg-red-800",
   movies: "bg-purple-600 hover:bg-purple-500",
   music: "bg-pink-600 hover:bg-pink-500",
-  food: "bg-orange-600 hover:bg-orange-500",
 };
 
 export default function ThemeSelector({

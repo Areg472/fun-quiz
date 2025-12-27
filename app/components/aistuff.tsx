@@ -13,7 +13,6 @@ const THEMES = [
   { id: "sports", name: "Sports", emoji: "⚽" },
   { id: "movies", name: "Movies & TV", emoji: "🎬" },
   { id: "music", name: "Music", emoji: "🎵" },
-  { id: "food", name: "Food & Cooking", emoji: "🍳" },
 ];
 
 export default function AIStuff() {
