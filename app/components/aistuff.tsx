@@ -124,7 +124,7 @@ export default function AIStuff() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl mb-8 mt-8">
         <ThemeSelector
           themes={THEMES}
           selectedTheme={selectedTheme}
@@ -201,6 +201,8 @@ export default function AIStuff() {
             </div>
           )}
         </div>
+
+        <div className="mt-6 text-center text-white text-lg">Areg :D</div>
       </div>
     </div>
   );
