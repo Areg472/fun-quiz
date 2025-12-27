@@ -2,17 +2,35 @@
 
 import { useChat } from "@ai-sdk/react";
 import { useState, useEffect, useRef } from "react";
+import ThemeSelector from "./ThemeSelector";
+import DifficultySelector from "./DifficultySelector";
+
+const THEMES = [
+  { id: "general", name: "General Knowledge", emoji: "🧠" },
+  { id: "science", name: "Science", emoji: "🔬" },
+  { id: "history", name: "History", emoji: "📜" },
+  { id: "geography", name: "Geography", emoji: "🌍" },
+  { id: "sports", name: "Sports", emoji: "⚽" },
+  { id: "movies", name: "Movies & TV", emoji: "🎬" },
+  { id: "music", name: "Music", emoji: "🎵" },
+  { id: "food", name: "Food & Cooking", emoji: "🍳" },
+];
 
 export default function AIStuff() {
   const [input, setInput] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState("");
-  const [isApproved, setIsApproved] = useState(false);
+  const [, setIsApproved] = useState(false);
   const [isWaiting, setIsWaiting] = useState(false);
   const [approvedCount, setApprovedCount] = useState(0);
   const [notApprovedCount, setNotApprovedCount] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState("");
+  const [selectedTheme, setSelectedTheme] = useState<(typeof THEMES)[0] | null>(
+    null,
+  );
+  const [selectedDifficulty, setSelectedDifficulty] = useState("medium");
   const isFirstResponse = useRef(true);
-  const { messages, sendMessage, status } = useChat({
+  const hasInitialized = useRef(false);
+  const { sendMessage, status } = useChat({
     onFinish: ({ message }) => {
       const firstPart = message.parts.find((part) => part.type === "text");
       if (firstPart && firstPart.type === "text") {
@@ -54,18 +72,89 @@ export default function AIStuff() {
     },
   });
 
+  const buildQuestionRequest = (theme?: string | null, difficulty?: string) => {
+    const difficultyText = difficulty || selectedDifficulty;
+    const themeText = theme ? ` about ${theme}` : "";
+    return `Give a ${difficultyText} difficulty question to ask the user${themeText}`;
+  };
+
   useEffect(() => {
-    sendMessage({ text: "Give a question to ask the user" });
-  }, []);
+    if (!hasInitialized.current) {
+      hasInitialized.current = true;
+      sendMessage({
+        text: "Give a medium difficulty question to ask the user",
+      });
+    }
+  }, [sendMessage]);
+
+  const handleThemeChange = (theme: (typeof THEMES)[0]) => {
+    setSelectedTheme(theme);
+    setCurrentQuestion("");
+    setCurrentAnswer("");
+    setApprovedCount(0);
+    setNotApprovedCount(0);
+    isFirstResponse.current = true;
+    sendMessage({
+      text: buildQuestionRequest(theme.name),
+    });
+  };
+
+  const handleClearTheme = () => {
+    setSelectedTheme(null);
+    setCurrentQuestion("");
+    setCurrentAnswer("");
+    setApprovedCount(0);
+    setNotApprovedCount(0);
+    isFirstResponse.current = true;
+    sendMessage({
+      text: buildQuestionRequest(null),
+    });
+  };
+
+  const handleDifficultyChange = (difficulty: string) => {
+    setSelectedDifficulty(difficulty);
+    setCurrentQuestion("");
+    setCurrentAnswer("");
+    setApprovedCount(0);
+    setNotApprovedCount(0);
+    isFirstResponse.current = true;
+    sendMessage({
+      text: buildQuestionRequest(selectedTheme?.name, difficulty),
+    });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black">
       <div className="w-full max-w-2xl">
-        <div className="border-2 border-white rounded-3xl p-12 bg-black">
+        <ThemeSelector
+          themes={THEMES}
+          selectedTheme={selectedTheme}
+          onThemeSelect={handleThemeChange}
+          onClearTheme={handleClearTheme}
+          disabled={isWaiting || status === "streaming"}
+        />
+
+        <div className="mt-4">
+          <DifficultySelector
+            selectedDifficulty={selectedDifficulty}
+            onDifficultySelect={handleDifficultyChange}
+            disabled={isWaiting || status === "streaming"}
+          />
+        </div>
+
+        <div className="border-2 border-white rounded-3xl p-12 bg-black mt-6">
           <div className="text-center mb-8">
             <h1 className="text-4xl font-bold text-white mb-2">
               {currentQuestion || "Pending question..."}
             </h1>
+            <p className="text-gray-400">
+              {selectedTheme
+                ? `Theme: ${selectedTheme.emoji} ${selectedTheme.name}`
+                : "Theme: 🎲 Random"}{" "}
+              | Difficulty:{" "}
+              {selectedDifficulty.charAt(0).toUpperCase() +
+                selectedDifficulty.slice(1)}
+            </p>
           </div>
 
           <div className="flex justify-center">
