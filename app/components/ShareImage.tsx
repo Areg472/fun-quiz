@@ -105,7 +105,7 @@ export default function ShareImage({
     ctx.textAlign = "center";
     ctx.font = "24px sans-serif";
     ctx.fillStyle = "#6b7280";
-    ctx.fillText("Share your quiz stats on slack!", width / 2, height - 70);
+    ctx.fillText("Share your quiz stats on Slack!", width / 2, height - 70);
     ctx.fillText("fun-quiz.aregus.me", width / 2, height - 40);
   }, [currentStreak, bestStreak, approvedCount, notApprovedCount]);
 
