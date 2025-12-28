@@ -15,8 +15,6 @@ const THEMES = [
   { id: "music", name: "Music", emoji: "🎵" },
 ];
 
-const STREAK_MILESTONES = [3, 5, 10, 15, 20, 25, 50, 100];
-
 function getStreakEmoji(streak: number): string {
   if (streak >= 20) return "🔥🔥🔥";
   if (streak >= 10) return "🔥🔥";
