@@ -295,6 +295,12 @@ export default function AIStuff() {
             bestStreak={bestStreak}
             approvedCount={approvedCount}
             notApprovedCount={notApprovedCount}
+            theme={
+              selectedTheme
+                ? `${selectedTheme.emoji} ${selectedTheme.name}`
+                : "🎲 Random"
+            }
+            difficulty={selectedDifficulty}
           />
         </div>
 

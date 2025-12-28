@@ -7,6 +7,8 @@ interface ShareImageProps {
   bestStreak: number;
   approvedCount: number;
   notApprovedCount: number;
+  theme: string;
+  difficulty: string;
 }
 
 export default function ShareImage({
@@ -14,6 +16,8 @@ export default function ShareImage({
   bestStreak,
   approvedCount,
   notApprovedCount,
+  theme,
+  difficulty,
 }: ShareImageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -43,6 +47,12 @@ export default function ShareImage({
     ctx.font = "bold 60px sans-serif";
     ctx.textAlign = "center";
     ctx.fillText("My Quiz Stats 🎯", width / 2, 100);
+
+    ctx.font = "30px sans-serif";
+    ctx.fillStyle = "#9ca3af";
+    const capitalizedDifficulty =
+      difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+    ctx.fillText(`${capitalizedDifficulty} | ${theme}`, width / 2, 150);
 
     const statsY = 320;
     const statSpacing = 240;
@@ -107,7 +117,14 @@ export default function ShareImage({
     ctx.fillStyle = "#6b7280";
     ctx.fillText("Share your quiz stats on Slack!", width / 2, height - 70);
     ctx.fillText("fun-quiz.aregus.me", width / 2, height - 40);
-  }, [currentStreak, bestStreak, approvedCount, notApprovedCount]);
+  }, [
+    currentStreak,
+    bestStreak,
+    approvedCount,
+    notApprovedCount,
+    theme,
+    difficulty,
+  ]);
 
   const handleDownload = useCallback(() => {
     generateImage();
