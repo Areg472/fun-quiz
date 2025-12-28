@@ -4,6 +4,7 @@ import { useChat } from "@ai-sdk/react";
 import { useState, useEffect, useRef } from "react";
 import ThemeSelector from "./ThemeSelector";
 import DifficultySelector from "./DifficultySelector";
+import ShareImage from "./ShareImage";
 
 const THEMES = [
   { id: "general", name: "General Knowledge", emoji: "🧠" },
@@ -289,6 +290,12 @@ export default function AIStuff() {
               <strong>Previous Answer:</strong> {currentAnswer}
             </div>
           )}
+          <ShareImage
+            currentStreak={currentStreak}
+            bestStreak={bestStreak}
+            approvedCount={approvedCount}
+            notApprovedCount={notApprovedCount}
+          />
         </div>
 
         <div className="mt-6 text-center text-white text-lg">Areg :D</div>
