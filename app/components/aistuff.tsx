@@ -15,6 +15,27 @@ const THEMES = [
   { id: "music", name: "Music", emoji: "🎵" },
 ];
 
+const STREAK_MILESTONES = [3, 5, 10, 15, 20, 25, 50, 100];
+
+function getStreakEmoji(streak: number): string {
+  if (streak >= 20) return "🔥🔥🔥";
+  if (streak >= 10) return "🔥🔥";
+  if (streak >= 5) return "🔥";
+  if (streak >= 3) return "⚡";
+  return "";
+}
+
+function getStreakMessage(streak: number): string {
+  if (streak >= 50) return "bad person";
+  if (streak >= 25) return "noooo";
+  if (streak >= 20) return "quit it";
+  if (streak >= 15) return "i want u to do a mistake";
+  if (streak >= 10) return "no";
+  if (streak >= 5) return "better";
+  if (streak >= 3) return "kewl";
+  return "";
+}
+
 export default function AIStuff() {
   const [input, setInput] = useState("");
   const [currentQuestion, setCurrentQuestion] = useState("");
@@ -27,9 +48,25 @@ export default function AIStuff() {
     null,
   );
   const [selectedDifficulty, setSelectedDifficulty] = useState("medium");
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [bestStreak, setBestStreak] = useState(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("quizBestStreak");
+      return saved ? parseInt(saved, 10) : 0;
+    }
+    return 0;
+  });
+  const [streakBroken, setStreakBroken] = useState(false);
   const isFirstResponse = useRef(true);
   const hasInitialized = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (bestStreak > 0) {
+      localStorage.setItem("quizBestStreak", bestStreak.toString());
+    }
+  }, [bestStreak]);
+
   const { sendMessage, status } = useChat({
     onFinish: ({ message }) => {
       const firstPart = message.parts.find((part) => part.type === "text");
@@ -53,8 +90,21 @@ export default function AIStuff() {
             if (!isFirstResponse.current) {
               if (approved) {
                 setApprovedCount((prev) => prev + 1);
+                setStreakBroken(false);
+                setCurrentStreak((prev) => {
+                  const newStreak = prev + 1;
+                  if (newStreak > bestStreak) {
+                    setBestStreak(newStreak);
+                  }
+                  return newStreak;
+                });
               } else {
                 setNotApprovedCount((prev) => prev + 1);
+                if (currentStreak >= 3) {
+                  setStreakBroken(true);
+                  setTimeout(() => setStreakBroken(false), 2000);
+                }
+                setCurrentStreak(0);
               }
             }
           }
@@ -99,6 +149,7 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setApprovedCount(0);
     setNotApprovedCount(0);
+    setCurrentStreak(0);
     isFirstResponse.current = true;
     sendMessage({
       text: buildQuestionRequest(theme.name),
@@ -111,6 +162,7 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setApprovedCount(0);
     setNotApprovedCount(0);
+    setCurrentStreak(0);
     isFirstResponse.current = true;
     sendMessage({
       text: buildQuestionRequest(null),
@@ -123,11 +175,15 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setApprovedCount(0);
     setNotApprovedCount(0);
+    setCurrentStreak(0);
     isFirstResponse.current = true;
     sendMessage({
       text: buildQuestionRequest(selectedTheme?.name, difficulty),
     });
   };
+
+  const streakEmoji = getStreakEmoji(currentStreak);
+  const streakMessage = getStreakMessage(currentStreak);
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-black">
@@ -188,7 +244,34 @@ export default function AIStuff() {
             </form>
           </div>
 
-          <div className="mt-8 flex justify-center gap-8 text-white">
+          <div className="mt-6 text-center">
+            <div className={`transition-all duration-300`}>
+              {currentStreak > 0 && (
+                <div className="text-2xl text-white mb-2">
+                  <span className="font-bold">
+                    {streakEmoji} Streak: {currentStreak} {streakEmoji}
+                  </span>
+                  {streakMessage && (
+                    <div
+                      className={`text-lg mt-1 ${currentStreak >= 10 ? "text-orange-400" : "text-yellow-400"}`}
+                    >
+                      {streakMessage}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+            {streakBroken && (
+              <div className="text-xl text-red-400 animate-pulse">
+                Streak broken(yay)!
+              </div>
+            )}
+            <div className="text-gray-400 mt-2">
+              🏆 Best Streak: {bestStreak}
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center gap-8 text-white">
             <div className="text-center">
               <div className="text-2xl">✅ {approvedCount}</div>
             </div>
