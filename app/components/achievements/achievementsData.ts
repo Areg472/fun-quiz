@@ -118,9 +118,9 @@ export const ACHIEVEMENTS: Achievement[] = [
   },
   {
     id: "theme_explorer",
-    name: "Explorer",
+    name: "Cuckoo",
     description: "Play 3 different themes",
-    emoji: "🗺️",
+    emoji: "🕰️",
     category: "special",
     requirement: 3,
   },
