@@ -44,6 +44,8 @@ export default function AIStuff() {
   const [approvedCount, setApprovedCount] = useState(0);
   const [notApprovedCount, setNotApprovedCount] = useState(0);
   const [currentAnswer, setCurrentAnswer] = useState("");
+  const [currentHint, setCurrentHint] = useState("");
+  const [showHint, setShowHint] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState<(typeof THEMES)[0] | null>(
     null,
   );
@@ -76,6 +78,11 @@ export default function AIStuff() {
 
           if (parsed.question) {
             setCurrentQuestion(parsed.question);
+            setShowHint(false);
+          }
+
+          if (parsed.hint) {
+            setCurrentHint(parsed.hint);
           }
 
           if (parsed.approval !== undefined) {
@@ -147,6 +154,8 @@ export default function AIStuff() {
     setSelectedTheme(theme);
     setCurrentQuestion("");
     setCurrentAnswer("");
+    setCurrentHint("");
+    setShowHint(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -160,6 +169,8 @@ export default function AIStuff() {
     setSelectedTheme(null);
     setCurrentQuestion("");
     setCurrentAnswer("");
+    setCurrentHint("");
+    setShowHint(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -173,6 +184,8 @@ export default function AIStuff() {
     setSelectedDifficulty(difficulty);
     setCurrentQuestion("");
     setCurrentAnswer("");
+    setCurrentHint("");
+    setShowHint(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -229,6 +242,7 @@ export default function AIStuff() {
                   setIsApproved(false);
                   setIsWaiting(true);
                   setCurrentAnswer("");
+                  setShowHint(false);
                 }
               }}
               className="w-full max-w-md"
@@ -243,6 +257,22 @@ export default function AIStuff() {
               />
             </form>
           </div>
+
+          {currentHint && !isWaiting && status !== "streaming" && (
+            <div className="mt-4 text-center">
+              <button
+                onClick={() => setShowHint(!showHint)}
+                className="px-6 py-2 bg-gray-600 hover:bg-gray-700 cursor-pointer text-white rounded-lg transition-colors"
+              >
+                {showHint ? "Hide Hint" : "Show Hint 💡"}
+              </button>
+              {showHint && (
+                <div className="mt-3 p-4 bg-gray-800 rounded-xl text-white">
+                  <strong>Hint:</strong> {currentHint}
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="mt-6 text-center">
             <div className={`transition-all duration-300`}>
