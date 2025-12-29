@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 import ThemeSelector from "./ThemeSelector";
 import DifficultySelector from "./DifficultySelector";
 import ShareImage from "./ShareImage";
+import { useAchievements, AchievementsPanel } from "./achievements";
 
 const THEMES = [
   { id: "general", name: "General Knowledge", emoji: "🧠" },
@@ -48,23 +49,19 @@ export default function AIStuff() {
   );
   const [selectedDifficulty, setSelectedDifficulty] = useState("medium");
   const [currentStreak, setCurrentStreak] = useState(0);
-  const [bestStreak, setBestStreak] = useState(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("quizBestStreak");
-      return saved ? parseInt(saved, 10) : 0;
-    }
-    return 0;
-  });
   const [streakBroken, setStreakBroken] = useState(false);
   const isFirstResponse = useRef(true);
   const hasInitialized = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (bestStreak > 0) {
-      localStorage.setItem("quizBestStreak", bestStreak.toString());
-    }
-  }, [bestStreak]);
+  const {
+    state: achievementsState,
+    recordAnswer,
+    getAchievementProgress,
+    resetAchievements,
+  } = useAchievements();
+
+  const bestStreak = achievementsState.stats.bestStreak;
 
   const { sendMessage, status } = useChat({
     onFinish: ({ message }) => {
@@ -92,9 +89,12 @@ export default function AIStuff() {
                 setStreakBroken(false);
                 setCurrentStreak((prev) => {
                   const newStreak = prev + 1;
-                  if (newStreak > bestStreak) {
-                    setBestStreak(newStreak);
-                  }
+                  recordAnswer(
+                    true,
+                    newStreak,
+                    selectedTheme?.name,
+                    selectedDifficulty,
+                  );
                   return newStreak;
                 });
               } else {
@@ -103,6 +103,7 @@ export default function AIStuff() {
                   setStreakBroken(true);
                   setTimeout(() => setStreakBroken(false), 2000);
                 }
+                recordAnswer(false, 0, selectedTheme?.name, selectedDifficulty);
                 setCurrentStreak(0);
               }
             }
@@ -306,6 +307,12 @@ export default function AIStuff() {
 
         <div className="mt-6 text-center text-white text-lg">Areg :D</div>
       </div>
+
+      <AchievementsPanel
+        state={achievementsState}
+        getAchievementProgress={getAchievementProgress}
+        onReset={resetAchievements}
+      />
     </div>
   );
 }
