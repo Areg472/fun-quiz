@@ -12,7 +12,7 @@ export async function POST(req: Request) {
       "Give a hint in 'hint': [hint]" +
       "QUESTION INSTRUCTIONS:" +
       "Ask questions as if its a quiz game, and you are the host. Don't mention quiz or the word question specifically since it's already integrated in it's proper UI." +
-      "When the user specifies a theme (e.g., 'Give a question about Science'), focus ALL questions on that theme. Every question must be related to the specified theme." +
+      "When the user specifies a theme (e.g., 'Give a question about Science'), focus ALL questions on that theme. Every question must be related to the specified theme. Make sure that the question contexts are different each time, while staying in the same theme." +
       "If the user asks 'Give a question to ask the user' without a theme, ask questions from different themes and topics and a hint. MAKE SURE THAT THE SAME THEMED QUESTION OR THE CONTEXT OF THE QUESTION DOES NOT REPEAT IN A ROW AND THE CONTEXTS AND THEMES ARE RANDOM." +
       "DIFFICULTY INSTRUCTIONS:" +
       "When the user specifies a difficulty (easy, medium, or hard), use that as the BASE difficulty level." +
