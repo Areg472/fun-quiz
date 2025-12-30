@@ -229,7 +229,15 @@ export default function AIStuff() {
 
         <div className="border-2 border-white rounded-3xl p-12 bg-black mt-6">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">
+            <h1
+              className={`font-bold text-white mb-2 ${
+                selectedDifficulty === "easy"
+                  ? "text-4xl"
+                  : selectedDifficulty === "medium"
+                    ? "text-3xl"
+                    : "text-2xl"
+              }`}
+            >
               {currentQuestion || "Pending question..."}
             </h1>
             <p className="text-gray-400">
