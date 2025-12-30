@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   ACHIEVEMENTS,
   AchievementsState,
@@ -41,8 +41,8 @@ export function useAchievements() {
   });
 
   const [newlyUnlocked, setNewlyUnlocked] = useState<NewAchievement[]>([]);
-  const [wrongStreak, setWrongStreak] = useState(0);
-  const [hadWrongStreak, setHadWrongStreak] = useState(false);
+  const wrongStreakRef = useRef(0);
+  const hadWrongStreakRef = useRef(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -148,19 +148,16 @@ export function useAchievements() {
       });
 
       if (!correct) {
-        setWrongStreak((prev) => {
-          const newWrongStreak = prev + 1;
-          if (newWrongStreak >= 3) {
-            setHadWrongStreak(true);
-          }
-          return newWrongStreak;
-        });
-      } else {
-        if (hadWrongStreak && currentStreak >= 5) {
-          unlockAchievement("comeback");
-          setHadWrongStreak(false);
+        wrongStreakRef.current += 1;
+        if (wrongStreakRef.current >= 3) {
+          hadWrongStreakRef.current = true;
         }
-        setWrongStreak(0);
+      } else {
+        if (hadWrongStreakRef.current && currentStreak >= 5) {
+          unlockAchievement("comeback");
+          hadWrongStreakRef.current = false;
+        }
+        wrongStreakRef.current = 0;
       }
 
       const totalQuestions = state.stats.totalQuestions + 1;
@@ -194,13 +191,7 @@ export function useAchievements() {
       if (difficultiesCount >= 3)
         updateProgress("difficulty_all", difficultiesCount);
     },
-    [
-      state.stats,
-      hadWrongStreak,
-      updateProgress,
-      unlockAchievement,
-      checkStreakAchievements,
-    ],
+    [state.stats, updateProgress, unlockAchievement, checkStreakAchievements],
   );
 
   const dismissNotification = useCallback((achievementId: string) => {
@@ -246,8 +237,8 @@ export function useAchievements() {
   const resetAchievements = useCallback(() => {
     setState(DEFAULT_ACHIEVEMENTS_STATE);
     setNewlyUnlocked([]);
-    setWrongStreak(0);
-    setHadWrongStreak(false);
+    wrongStreakRef.current = 0;
+    hadWrongStreakRef.current = false;
     if (typeof window !== "undefined") {
       localStorage.removeItem(STORAGE_KEY);
     }
