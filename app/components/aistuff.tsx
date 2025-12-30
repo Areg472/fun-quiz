@@ -53,6 +53,8 @@ export default function AIStuff() {
   const [currentStreak, setCurrentStreak] = useState(0);
   const [streakBroken, setStreakBroken] = useState(false);
   const isFirstResponse = useRef(true);
+  const selectedDifficultyRef = useRef(selectedDifficulty);
+  const selectedThemeRef = useRef(selectedTheme);
   const hasInitialized = useRef(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -99,8 +101,8 @@ export default function AIStuff() {
                   recordAnswer(
                     true,
                     newStreak,
-                    selectedTheme?.name,
-                    selectedDifficulty,
+                    selectedThemeRef.current?.name,
+                    selectedDifficultyRef.current,
                   );
                   return newStreak;
                 });
@@ -110,7 +112,12 @@ export default function AIStuff() {
                   setStreakBroken(true);
                   setTimeout(() => setStreakBroken(false), 2000);
                 }
-                recordAnswer(false, 0, selectedTheme?.name, selectedDifficulty);
+                recordAnswer(
+                  false,
+                  0,
+                  selectedThemeRef.current?.name,
+                  selectedDifficultyRef.current,
+                );
                 setCurrentStreak(0);
               }
             }
@@ -150,8 +157,9 @@ export default function AIStuff() {
     }
   }, [currentQuestion]);
 
-  const handleThemeChange = (theme: (typeof THEMES)[0]) => {
+  const handleThemeSelect = (theme: (typeof THEMES)[0]) => {
     setSelectedTheme(theme);
+    selectedThemeRef.current = theme;
     setCurrentQuestion("");
     setCurrentAnswer("");
     setCurrentHint("");
@@ -167,6 +175,7 @@ export default function AIStuff() {
 
   const handleClearTheme = () => {
     setSelectedTheme(null);
+    selectedThemeRef.current = null;
     setCurrentQuestion("");
     setCurrentAnswer("");
     setCurrentHint("");
@@ -182,6 +191,7 @@ export default function AIStuff() {
 
   const handleDifficultyChange = (difficulty: string) => {
     setSelectedDifficulty(difficulty);
+    selectedDifficultyRef.current = difficulty;
     setCurrentQuestion("");
     setCurrentAnswer("");
     setCurrentHint("");
@@ -204,7 +214,7 @@ export default function AIStuff() {
         <ThemeSelector
           themes={THEMES}
           selectedTheme={selectedTheme}
-          onThemeSelect={handleThemeChange}
+          onThemeSelect={handleThemeSelect}
           onClearTheme={handleClearTheme}
           disabled={isWaiting || status === "streaming"}
         />
