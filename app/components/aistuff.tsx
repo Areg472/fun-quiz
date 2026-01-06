@@ -50,6 +50,9 @@ export default function AIStuff() {
   const [currentAnswer, setCurrentAnswer] = useState("");
   const [currentHint, setCurrentHint] = useState("");
   const [showHint, setShowHint] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [hintUsedForCurrentQuestion, setHintUsedForCurrentQuestion] =
+    useState(false);
   const [selectedTheme, setSelectedTheme] = useState<(typeof THEMES)[0] | null>(
     null,
   );
@@ -85,6 +88,7 @@ export default function AIStuff() {
           if (parsed.question) {
             setCurrentQuestion(parsed.question);
             setShowHint(false);
+            setHintUsedForCurrentQuestion(false);
           }
 
           if (parsed.hint) {
@@ -168,6 +172,8 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setCurrentHint("");
     setShowHint(false);
+    setHintsUsed(0);
+    setHintUsedForCurrentQuestion(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -184,6 +190,8 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setCurrentHint("");
     setShowHint(false);
+    setHintsUsed(0);
+    setHintUsedForCurrentQuestion(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -200,6 +208,8 @@ export default function AIStuff() {
     setCurrentAnswer("");
     setCurrentHint("");
     setShowHint(false);
+    setHintsUsed(0);
+    setHintUsedForCurrentQuestion(false);
     setApprovedCount(0);
     setNotApprovedCount(0);
     setCurrentStreak(0);
@@ -283,7 +293,13 @@ export default function AIStuff() {
           {currentHint && !isWaiting && status !== "streaming" && (
             <div className="mt-4 text-center">
               <button
-                onClick={() => setShowHint(!showHint)}
+                onClick={() => {
+                  if (!showHint && !hintUsedForCurrentQuestion) {
+                    setHintsUsed((prev) => prev + 1);
+                    setHintUsedForCurrentQuestion(true);
+                  }
+                  setShowHint(!showHint);
+                }}
                 className="px-6 py-2 bg-gray-600 hover:bg-gray-700 cursor-pointer text-white rounded-lg transition-colors"
               >
                 {showHint ? "Hide Hint" : "Show Hint 💡"}
@@ -361,6 +377,7 @@ export default function AIStuff() {
               ).length
             }
             totalAchievements={ACHIEVEMENTS.filter((a) => !a.hidden).length}
+            hintsUsed={hintsUsed}
           />
         </div>
 

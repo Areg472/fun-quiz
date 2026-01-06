@@ -11,6 +11,7 @@ interface ShareImageProps {
   difficulty: string;
   achievementCount: number;
   totalAchievements: number;
+  hintsUsed: number;
 }
 
 export default function ShareImage({
@@ -22,6 +23,7 @@ export default function ShareImage({
   difficulty,
   achievementCount,
   totalAchievements,
+  hintsUsed,
 }: ShareImageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -59,8 +61,8 @@ export default function ShareImage({
     ctx.fillText(`${capitalizedDifficulty} | ${theme}`, width / 2, 150);
 
     const statsY = 320;
-    const statSpacing = 200;
-    const startX = width / 2 - statSpacing * 2;
+    const statSpacing = 170;
+    const startX = width / 2 - statSpacing * 2.5;
 
     const drawStat = (
       emoji: string,
@@ -135,6 +137,13 @@ export default function ShareImage({
       startX + statSpacing * 4,
       achievementColor,
     );
+    drawStat(
+      "💡",
+      "Hints Used",
+      hintsUsed.toString(),
+      startX + statSpacing * 5,
+      "#fbbf24",
+    );
 
     ctx.textAlign = "center";
     ctx.font = "24px sans-serif";
@@ -150,6 +159,7 @@ export default function ShareImage({
     difficulty,
     achievementCount,
     totalAchievements,
+    hintsUsed,
   ]);
 
   const handleDownload = useCallback(() => {
