@@ -9,6 +9,8 @@ interface ShareImageProps {
   notApprovedCount: number;
   theme: string;
   difficulty: string;
+  achievementCount: number;
+  totalAchievements: number;
 }
 
 export default function ShareImage({
@@ -18,6 +20,8 @@ export default function ShareImage({
   notApprovedCount,
   theme,
   difficulty,
+  achievementCount,
+  totalAchievements,
 }: ShareImageProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -55,29 +59,29 @@ export default function ShareImage({
     ctx.fillText(`${capitalizedDifficulty} | ${theme}`, width / 2, 150);
 
     const statsY = 320;
-    const statSpacing = 240;
-    const startX = width / 2 - statSpacing * 1.5;
+    const statSpacing = 200;
+    const startX = width / 2 - statSpacing * 2;
 
     const drawStat = (
       emoji: string,
       label: string,
-      value: number,
+      value: string,
       x: number,
       color: string,
     ) => {
       ctx.textAlign = "center";
 
-      ctx.font = "70px sans-serif";
+      ctx.font = "60px sans-serif";
       ctx.fillStyle = "#ffffff";
       ctx.fillText(emoji, x, statsY);
 
-      ctx.font = "28px sans-serif";
+      ctx.font = "24px sans-serif";
       ctx.fillStyle = "#9ca3af";
-      ctx.fillText(label, x, statsY + 50);
+      ctx.fillText(label, x, statsY + 45);
 
-      ctx.font = "bold 72px sans-serif";
+      ctx.font = "bold 60px sans-serif";
       ctx.fillStyle = color;
-      ctx.fillText(value.toString(), x, statsY + 130);
+      ctx.fillText(value, x, statsY + 115);
     };
 
     const currentStreakColor =
@@ -89,27 +93,47 @@ export default function ShareImage({
     const bestStreakColor =
       bestStreak >= 20 ? "#f97316" : bestStreak >= 10 ? "#fbbf24" : "#fde047";
 
-    drawStat("⚡", "Current Streak", currentStreak, startX, currentStreakColor);
+    const achievementColor =
+      achievementCount === totalAchievements
+        ? "#fbbf24"
+        : achievementCount >= totalAchievements / 2
+          ? "#a78bfa"
+          : "#60a5fa";
+
+    drawStat(
+      "⚡",
+      "Current Streak",
+      currentStreak.toString(),
+      startX,
+      currentStreakColor,
+    );
     drawStat(
       "🔥",
       "Max Streak",
-      bestStreak,
+      bestStreak.toString(),
       startX + statSpacing,
       bestStreakColor,
     );
     drawStat(
       "✅",
       "Correct",
-      approvedCount,
+      approvedCount.toString(),
       startX + statSpacing * 2,
       "#10b981",
     );
     drawStat(
       "❌",
       "Mistakes",
-      notApprovedCount,
+      notApprovedCount.toString(),
       startX + statSpacing * 3,
       "#ef4444",
+    );
+    drawStat(
+      "🏆",
+      "Achievements",
+      `${achievementCount}/${totalAchievements}`,
+      startX + statSpacing * 4,
+      achievementColor,
     );
 
     ctx.textAlign = "center";
@@ -124,6 +148,8 @@ export default function ShareImage({
     notApprovedCount,
     theme,
     difficulty,
+    achievementCount,
+    totalAchievements,
   ]);
 
   const handleDownload = useCallback(() => {

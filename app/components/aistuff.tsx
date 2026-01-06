@@ -5,7 +5,11 @@ import { useState, useEffect, useRef } from "react";
 import ThemeSelector from "./ThemeSelector";
 import DifficultySelector from "./DifficultySelector";
 import ShareImage from "./ShareImage";
-import { useAchievements, AchievementsPanel } from "./achievements";
+import {
+  useAchievements,
+  AchievementsPanel,
+  ACHIEVEMENTS,
+} from "./achievements";
 
 const THEMES = [
   { id: "general", name: "General Knowledge", emoji: "🧠" },
@@ -350,6 +354,13 @@ export default function AIStuff() {
                 : "🎲 Random"
             }
             difficulty={selectedDifficulty}
+            achievementCount={
+              ACHIEVEMENTS.filter(
+                (a) =>
+                  achievementsState.achievements[a.id]?.unlockedAt !== null,
+              ).length
+            }
+            totalAchievements={ACHIEVEMENTS.filter((a) => !a.hidden).length}
           />
         </div>
 
