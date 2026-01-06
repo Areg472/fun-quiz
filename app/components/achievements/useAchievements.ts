@@ -50,6 +50,43 @@ export function useAchievements() {
     }
   }, [state]);
 
+  const checkCompletionist = useCallback(
+    (updatedAchievements: typeof state.achievements) => {
+      if (updatedAchievements["completionist"]?.unlockedAt) return;
+
+      const otherAchievements = ACHIEVEMENTS.filter(
+        (a) => a.id !== "completionist",
+      );
+      const allOthersUnlocked = otherAchievements.every(
+        (a) => updatedAchievements[a.id]?.unlockedAt !== null,
+      );
+
+      if (allOthersUnlocked) {
+        const completionistAchievement = ACHIEVEMENTS.find(
+          (a) => a.id === "completionist",
+        );
+        if (completionistAchievement) {
+          const timestamp = new Date().toISOString();
+          setState((prev) => ({
+            ...prev,
+            achievements: {
+              ...prev.achievements,
+              completionist: {
+                unlockedAt: timestamp,
+                progress: 1,
+              },
+            },
+          }));
+          setNewlyUnlocked((prev) => [
+            ...prev,
+            { achievement: completionistAchievement, timestamp },
+          ]);
+        }
+      }
+    },
+    [],
+  );
+
   const unlockAchievement = useCallback(
     (achievementId: string) => {
       const achievement = ACHIEVEMENTS.find((a) => a.id === achievementId);
@@ -59,20 +96,26 @@ export function useAchievements() {
 
       const timestamp = new Date().toISOString();
 
+      const updatedAchievements = {
+        ...state.achievements,
+        [achievementId]: {
+          unlockedAt: timestamp,
+          progress: achievement.requirement,
+        },
+      };
+
       setState((prev) => ({
         ...prev,
-        achievements: {
-          ...prev.achievements,
-          [achievementId]: {
-            unlockedAt: timestamp,
-            progress: achievement.requirement,
-          },
-        },
+        achievements: updatedAchievements,
       }));
 
       setNewlyUnlocked((prev) => [...prev, { achievement, timestamp }]);
+
+      if (achievementId !== "completionist") {
+        checkCompletionist(updatedAchievements);
+      }
     },
-    [state.achievements],
+    [state.achievements, checkCompletionist],
   );
 
   const updateProgress = useCallback(

@@ -156,6 +156,15 @@ export const ACHIEVEMENTS: Achievement[] = [
     category: "special",
     requirement: 1,
   },
+  {
+    id: "completionist",
+    name: "True Completionist",
+    description: "Unlock all other achievements",
+    emoji: "👑",
+    category: "special",
+    requirement: 1,
+    hidden: true,
+  },
 ];
 
 export const DEFAULT_ACHIEVEMENTS_STATE: AchievementsState = {
